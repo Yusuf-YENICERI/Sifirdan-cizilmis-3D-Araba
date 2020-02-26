@@ -1,0 +1,240 @@
+<html>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+attribute  vec4 position;
+attribute  vec4 inColor;
+attribute vec3 normal;
+varying vec4 fColor;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform vec4 ambient_car, diffuse_car, specular_car, light_position;
+uniform float shiness;
+uniform vec4 lightningActive;
+
+void main()
+{
+    vec4 check = vec4(1.0, 1.0, 1.0, 1.0);
+    if(lightningActive.x == check.x){
+    vec3 pos = -(modelViewMatrix * position).xyz;
+
+    vec3 light = light_position.xyz;
+
+    vec3 l = normalize(light-pos);
+    vec3 e = normalize(-pos);
+    vec3 h = normalize(l+e);
+
+    vec4 n_n = vec4(normal, 0);
+
+    vec3 n = normalize( (modelViewMatrix*n_n).xyz );
+
+    vec4 ambient = ambient_car;
+
+    float kd = max(dot(l,n), 0.0);
+    
+    vec4 diffuse = kd*diffuse_car;
+
+    float ks = pow(max(dot(n, h), 0.0), shiness);
+
+    vec4 specular = ks* specular_car;
+
+    if(dot(l,n)<0.0)
+        specular = vec4(0.0, 0.0, 0.0, 1.0);
+
+    fColor = ambient + diffuse + specular;
+    fColor.a = 1.0;
+    gl_Position = projectionMatrix * modelViewMatrix * position;
+    }else{
+        fColor = inColor;
+        gl_Position = projectionMatrix * modelViewMatrix * position;
+    }
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying  vec4 fColor;
+
+void main()
+{
+    gl_FragColor = fColor;
+}
+</script>
+
+<script type="text/javascript" src="webgl-utils.js"></script>
+<script type="text/javascript" src="initShaders.js"></script>
+<script type="text/javascript" src="MV.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="vertices.js"></script>
+
+<div>
+
+    <div>
+        <button id="lightningA">lightning active</button>
+        <button id="lightningI">lightning inactive</button>
+    </div>
+<br>
+    <div>
+        <select id="changeWireframe">
+            <option>color</option>
+            <option>wireframe-color</option>
+            <option>wireframe</option>
+        </select>
+    </div>
+<br>
+    <select id="colormenu" size="0">
+        <option value="all">
+            All
+        </option>
+        <option value="0w">
+            wheelFrontLeft
+        </option>
+        <option value="1w">
+            wheelFrontRight
+        </option>
+        <option value="2w">
+            wheelBackLeft
+        </option>
+        <option value="3w">
+            wheelBackRight
+        </option>
+        <option value="4w">
+            wheelAxisFront
+        </option>
+        <option value="5w">
+            wheelAxisBack
+        </option>
+        <option value="6c">
+            cubeBack
+        </option>
+        <option value="7c">
+            cubeBottomCenterLeft
+        </option>
+        <option value="8c">
+            cubeBottomCenterCenter
+        </option>
+        <option value="9c">
+            cubeBottomCenterRight
+        </option>
+        <option value="10c">
+            cubeFront
+        </option>
+        <option value="11c">
+            cubeAboveCenterLeft
+        </option>
+        <option value="12c">
+            cubeAboveCenterCenter
+        </option>
+        <option value="13c">
+            cubeAboveCenterRight
+        </option>
+        <option value="14t">
+            triLeft
+        </option>
+        <option value="15t">
+            triRight
+        </option>
+        <option value="16t">
+            triFront
+        </option>
+    </select>
+
+    <select id="colormenu2">
+
+    </select>
+
+    <span>r:</span>
+    <input id="red" type="text" placeholder="red.." style="width:45px">
+
+    <span>g:</span>
+    <input id="green" type="text" placeholder="green.." style="width:45px">
+
+    <span>b:</span>
+    <input id="blue" type="text" placeholder="blue.." style="width:45px">
+
+    <span>a:</span>
+    <input id="alpha" type="text" placeholder="alpha.." style="width:45px">
+
+    <button id="colorApply" style="color: white; background-color: rgb(29, 211, 38)">Apply</button>
+</div>
+
+<br>
+
+<!-- <div>
+    <button id="bScale">Bigger Scale</button>
+    <button id="sScale">Smaller Scale</button>
+</div> -->
+
+
+<div>
+        <span>scale |</span>
+    
+        <span>x:</span>
+        <input id="xscale" value="1" type="text" placeholder="x scale.." style="width:55px">
+    
+        <span>y:</span>
+        <input id="yscale" value="1" type="text" placeholder="y scale.." style="width:55px">
+    
+        <span>z:</span>
+        <input id="zscale" value="1" type="text" placeholder="z scale.." style="width:55px">
+    
+        <button id="scaleApply" style="color: white; background-color: rgb(168, 29, 211)">Apply</button>
+    </div>
+<br>
+<div>
+    <span>rotate |</span>
+
+    <span>x:</span>
+    <input id="xAngle" type="text" placeholder="x angle.." style="width:55px">
+
+    <span>y:</span>
+    <input id="yAngle" type="text" placeholder="y angle.." style="width:55px">
+
+    <span>z:</span>
+    <input id="zAngle" type="text" placeholder="z angle.." style="width:55px">
+
+    <button id="angleApply" style="color: white; background-color: rgb(29, 184, 211)">Apply</button>
+
+    <span style="margin-left:50px">slider |</span>
+
+    <span style="margin-left:10px; margin-right: 5px">x:</span>-180<input id="xrotateSlider" type="range"
+        min="-180" max="180" step="10" value="0" />180
+
+    <span style="margin-left:10px; margin-right: 5px"> y:</span>-180<input id="yrotateSlider" type="range"
+        min="-180" max="180" step="10" value="0" />180
+
+    <span style="margin-left:10px; margin-right: 5px">z:</span>-180<input id="zrotateSlider" type="range"
+        min="-180" max="180" step="10" value="0" />180
+
+</div>
+<br>
+
+<div>
+
+    <input type="radio" id="rortho" name="projection">orthogonal</input>
+    <input type="radio" id="rperspec" name="projection">perspective</input>
+<br>
+<br>
+    <button id="bzi">increase z</button>
+    <button id="bzd">decrease z</button>
+    <button id="bcamappi">proximity increase</button>
+    <button id="bcamappd">proximity decrease</button>
+    <button id="bradiusi">increase radius</button>
+    <button id="bradiusd">decrease radius</button>
+
+    <button id="bthetai">increase theta</button>
+    <button id="bthetad">decrease theta</button>
+    <button id="bphii">increase phi</button>
+    <button id="bphid">decrease phi</button>
+</div>
+
+
+
+<body>
+    <canvas id="gl-canvas" width="640" height="360"> Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+</body>
+
+</html>
