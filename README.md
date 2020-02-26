@@ -19,7 +19,7 @@ https://www.cs.unm.edu/~angel/BOOK/INTERACTIVE_COMPUTER_GRAPHICS/SEVENTH_EDITION
 
 # 3D Car Drawn From Scratch
 
-3D Car Drawn From Scratch using webgl WITH PERMISSION OF ALLAH.
+3D Car Drawn From Scratch using webgl WITH THE PERMISSION OF ALLAH.
 
 
 Pictures:
